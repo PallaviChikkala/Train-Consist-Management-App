@@ -1,18 +1,25 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 class Bogie {
     private String name;
+    private String type;   // Passenger or Goods
     private int capacity;
 
-    public Bogie(String name, int capacity) {
+    public Bogie(String name, String type, int capacity) {
         this.name = name;
+        this.type = type;
         this.capacity = capacity;
     }
 
     public String getName() {
         return name;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public int getCapacity() {
@@ -21,7 +28,7 @@ class Bogie {
 
     @Override
     public String toString() {
-        return name + " → Capacity: " + capacity;
+        return name + " (" + type + ") → Capacity: " + capacity;
     }
 }
 
@@ -31,24 +38,24 @@ public class TrainConsistManagementApp {
         // Welcome message
         System.out.println("=== Train Consist Management App ===");
 
-        // Create a list of passenger bogies
-        List<Bogie> passengerBogies = new ArrayList<>();
-        passengerBogies.add(new Bogie("Sleeper", 72));
-        passengerBogies.add(new Bogie("AC Chair", 56));
-        passengerBogies.add(new Bogie("First Class", 40));
+        // Create a list of bogies (Passenger + Goods)
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", "Passenger", 72));
+        bogies.add(new Bogie("AC Chair", "Passenger", 56));
+        bogies.add(new Bogie("First Class", "Passenger", 40));
+        bogies.add(new Bogie("Rectangular", "Goods", 1000));
+        bogies.add(new Bogie("Cylindrical", "Goods", 800));
 
-        // Display original bogies
-        System.out.println("Original bogies:");
-        passengerBogies.forEach(System.out::println);
+        // Group bogies by type using Collectors.groupingBy
+        Map<String, List<Bogie>> groupedBogies = bogies.stream()
+                .collect(Collectors.groupingBy(Bogie::getType));
 
-        // Filter bogies with capacity > 60 using Stream API
-        List<Bogie> highCapacityBogies = passengerBogies.stream()
-                .filter(b -> b.getCapacity() > 60)
-                .collect(Collectors.toList());
-
-        // Display filtered bogies
-        System.out.println("\nFiltered bogies (capacity > 60):");
-        highCapacityBogies.forEach(System.out::println);
+        // Display grouped bogies
+        System.out.println("Grouped bogies by type:");
+        groupedBogies.forEach((type, bogieList) -> {
+            System.out.println(type + ":");
+            bogieList.forEach(System.out::println);
+        });
 
         // Program continues...
         System.out.println("\nSystem ready for further operations...");
