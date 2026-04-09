@@ -1,40 +1,72 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+class Bogie {
+    private String name;
+    private int capacity;
+
+    public Bogie(String name, int capacity) {
+        this.name = name;
+        this.capacity = capacity;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getCapacity() {
+        return capacity;
+    }
+
+    @Override
+    public String toString() {
+        return name + " → Capacity: " + capacity;
+    }
+}
 
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
-        // Welcome message
         System.out.println("=== Train Consist Management App ===");
 
-        // Sample inputs (these could come from user input in a real system)
-        String trainId1 = "TRN-1234";   // valid
-        String trainId2 = "TRAIN12";    // invalid
-        String cargoCode1 = "PET-AB";   // valid
-        String cargoCode2 = "PET-ab";   // invalid
+        // Prepare a dataset of bogies
+        List<Bogie> bogies = new ArrayList<>();
+        bogies.add(new Bogie("Sleeper", 72));
+        bogies.add(new Bogie("AC Chair", 56));
+        bogies.add(new Bogie("First Class", 40));
+        bogies.add(new Bogie("Luxury", 90));
+        bogies.add(new Bogie("Economy", 30));
 
-        // Define regex patterns
-        Pattern trainIdPattern = Pattern.compile("TRN-\\d{4}");
-        Pattern cargoCodePattern = Pattern.compile("PET-[A-Z]{2}");
+        // Loop-based filtering
+        long startLoop = System.nanoTime();
+        List<Bogie> loopFiltered = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.getCapacity() > 60) {
+                loopFiltered.add(b);
+            }
+        }
+        long endLoop = System.nanoTime();
+        long loopTime = endLoop - startLoop;
 
-        // Validate Train IDs
-        validateInput(trainId1, trainIdPattern, "Train ID");
-        validateInput(trainId2, trainIdPattern, "Train ID");
+        // Stream-based filtering
+        long startStream = System.nanoTime();
+        List<Bogie> streamFiltered = bogies.stream()
+                .filter(b -> b.getCapacity() > 60)
+                .collect(Collectors.toList());
+        long endStream = System.nanoTime();
+        long streamTime = endStream - startStream;
 
-        // Validate Cargo Codes
-        validateInput(cargoCode1, cargoCodePattern, "Cargo Code");
-        validateInput(cargoCode2, cargoCodePattern, "Cargo Code");
+        // Display results
+        System.out.println("\nLoop-based filtering result:");
+        loopFiltered.forEach(System.out::println);
+        System.out.println("Execution time (nanoseconds): " + loopTime);
+
+        System.out.println("\nStream-based filtering result:");
+        streamFiltered.forEach(System.out::println);
+        System.out.println("Execution time (nanoseconds): " + streamTime);
 
         // Program continues...
         System.out.println("\nSystem ready for further operations...");
-    }
-
-    private static void validateInput(String input, Pattern pattern, String label) {
-        Matcher matcher = pattern.matcher(input);
-        if (matcher.matches()) {
-            System.out.println(label + " \"" + input + "\" is VALID.");
-        } else {
-            System.out.println(label + " \"" + input + "\" is INVALID.");
-        }
     }
 }
