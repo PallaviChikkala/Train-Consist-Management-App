@@ -1,28 +1,5 @@
-import java.util.ArrayList;
-import java.util.List;
-
-class Bogie {
-    private String name;
-    private int capacity;
-
-    public Bogie(String name, int capacity) {
-        this.name = name;
-        this.capacity = capacity;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public int getCapacity() {
-        return capacity;
-    }
-
-    @Override
-    public String toString() {
-        return name + " → Capacity: " + capacity;
-    }
-}
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TrainConsistManagementApp {
 
@@ -30,25 +7,34 @@ public class TrainConsistManagementApp {
         // Welcome message
         System.out.println("=== Train Consist Management App ===");
 
-        // Create a list of passenger bogies
-        List<Bogie> passengerBogies = new ArrayList<>();
-        passengerBogies.add(new Bogie("Sleeper", 72));
-        passengerBogies.add(new Bogie("AC Chair", 56));
-        passengerBogies.add(new Bogie("First Class", 40));
+        // Sample inputs (these could come from user input in a real system)
+        String trainId1 = "TRN-1234";   // valid
+        String trainId2 = "TRAIN12";    // invalid
+        String cargoCode1 = "PET-AB";   // valid
+        String cargoCode2 = "PET-ab";   // invalid
 
-        // Display bogies
-        System.out.println("Passenger bogies:");
-        passengerBogies.forEach(System.out::println);
+        // Define regex patterns
+        Pattern trainIdPattern = Pattern.compile("TRN-\\d{4}");
+        Pattern cargoCodePattern = Pattern.compile("PET-[A-Z]{2}");
 
-        // Use Stream API to calculate total seating capacity
-        int totalSeats = passengerBogies.stream()
-                .map(Bogie::getCapacity)          // extract capacity
-                .reduce(0, Integer::sum);         // sum capacities
+        // Validate Train IDs
+        validateInput(trainId1, trainIdPattern, "Train ID");
+        validateInput(trainId2, trainIdPattern, "Train ID");
 
-        // Display total seating capacity
-        System.out.println("\nTotal seating capacity in train: " + totalSeats);
+        // Validate Cargo Codes
+        validateInput(cargoCode1, cargoCodePattern, "Cargo Code");
+        validateInput(cargoCode2, cargoCodePattern, "Cargo Code");
 
         // Program continues...
-        System.out.println("System ready for further operations...");
+        System.out.println("\nSystem ready for further operations...");
+    }
+
+    private static void validateInput(String input, Pattern pattern, String label) {
+        Matcher matcher = pattern.matcher(input);
+        if (matcher.matches()) {
+            System.out.println(label + " \"" + input + "\" is VALID.");
+        } else {
+            System.out.println(label + " \"" + input + "\" is INVALID.");
+        }
     }
 }
