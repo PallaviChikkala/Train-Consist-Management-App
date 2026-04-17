@@ -1,6 +1,6 @@
 import java.util.Scanner;
 
-public class TrainConsistManagementApp {
+public class TrainApp {
 
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
