@@ -12,33 +12,37 @@ public class TrainApp {
         sc.nextLine(); // consume newline
 
         String[] bogieIDs = new String[n];
-        System.out.println("Enter bogie IDs (unsorted):");
-        for (int i = 0; i < n; i++) {
-            bogieIDs[i] = sc.nextLine();
+        if (n > 0) {
+            System.out.println("Enter bogie IDs:");
+            for (int i = 0; i < n; i++) {
+                bogieIDs[i] = sc.nextLine();
+            }
         }
 
-        // Step 2: Sort bogie IDs (Binary Search requires sorted data)
-        Arrays.sort(bogieIDs);
-
-        System.out.println("Sorted Bogie IDs: " + Arrays.toString(bogieIDs));
-
-        // Step 3: Input search key
+        // Step 2: Input search key
         System.out.print("Enter bogie ID to search: ");
         String searchKey = sc.nextLine();
 
-        // Step 4: Perform Binary Search
-        boolean found = binarySearch(bogieIDs, searchKey);
-
-        // Step 5: Display result
-        if (found) {
-            System.out.println("Bogie ID " + searchKey + " found in the consist.");
-        } else {
-            System.out.println("Bogie ID " + searchKey + " not found in the consist.");
+        // Step 3: Defensive check before searching
+        try {
+            boolean found = binarySearchWithValidation(bogieIDs, searchKey);
+            if (found) {
+                System.out.println("Bogie ID " + searchKey + " found in the consist.");
+            } else {
+                System.out.println("Bogie ID " + searchKey + " not found in the consist.");
+            }
+        } catch (IllegalStateException e) {
+            System.out.println("Error: " + e.getMessage());
         }
     }
 
-    // Binary Search implementation
-    public static boolean binarySearch(String[] arr, String key) {
+    // Binary Search with defensive validation
+    public static boolean binarySearchWithValidation(String[] arr, String key) {
+        if (arr == null || arr.length == 0) {
+            throw new IllegalStateException("Cannot perform search: Train has no bogies.");
+        }
+
+        Arrays.sort(arr); // Ensure sorted before searching
         int low = 0;
         int high = arr.length - 1;
 
@@ -47,13 +51,13 @@ public class TrainApp {
             int comparison = key.compareTo(arr[mid]);
 
             if (comparison == 0) {
-                return true; // Match found
+                return true;
             } else if (comparison < 0) {
-                high = mid - 1; // Search left half
+                high = mid - 1;
             } else {
-                low = mid + 1; // Search right half
+                low = mid + 1;
             }
         }
-        return false; // Not found
+        return false;
     }
 }
